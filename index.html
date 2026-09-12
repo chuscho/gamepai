@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Berkah Sidoarjo - PAI Kelas 9 (Kurban & Aqiqah)</title>
+    <!-- Tailwind CSS for modern responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library for rewards -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #064e3b 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+        .font-arabic {
+            font-family: 'Amiri', serif;
+        }
+        .custom-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+        }
+        .glow-amber {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #059669;
+            border-radius: 4px;
+        }
+        /* Touch friendly interactive styling */
+        .btn-hover {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4);
+        }
+        .btn-hover:active {
+            transform: translateY(1px);
+        }
+        .animate-bounce-slow {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-3%); }
+            50% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Top Header -->
+    <header class="bg-slate-900/90 backdrop-filter backdrop-blur-md border-b border-emerald-500/30 sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-emerald-900/50">
+                    <i class="fa-solid fa-kaaba"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg sm:text-xl text-emerald-400 leading-tight">PAI IX: Kurban & Aqiqah</h1>
+                    <p class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-red-400 mr-1"></i>Konteks Edukasi Kuliner Sidoarjo</p>
+                </div>
+            </div>
+            
+            <!-- User Status & Score Board -->
+            <div class="flex items-center space-x-3 text-sm">
+                <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2">
+                    <i class="fa-solid fa-star text-amber-400"></i>
+                    <span class="text-slate-300 font-semibold">Skor Berkah:</span>
+                    <span id="score-display" class="text-amber-400 font-bold text-base">0</span>
+                </div>
+                <button onclick="toggleSound()" id="sound-btn" class="p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+        
+        <!-- Navigation Menu Tabs -->
+        <nav class="flex flex-wrap gap-2 justify-center sm:justify-start bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800">
+            <button onclick="switchTab('materi')" id="tab-materi" class="tab-btn flex-1 sm:flex-initial px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 bg-emerald-600 text-white shadow-md">
+                <i class="fa-solid fa-book-open mr-2"></i>1. Rangkuman Syariat
+            </button>
+            <button onclick="switchTab('level1')" id="tab-level1" class="tab-btn flex-1 sm:flex-initial px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-hand-holding-hand mr-2"></i>2. Game Menyembelih
+            </button>
+            <button onclick="switchTab('level2')" id="tab-level2" class="tab-btn flex-1 sm:flex-initial px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-scale-balanced mr-2"></i>3. Kurban vs Aqiqah
+            </button>
+            <button onclick="switchTab('level3')" id="tab-level3" class="tab-btn flex-1 sm:flex-initial px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-utensils mr-2"></i>4. Dapur Sidoarjo
+            </button>
+        </nav>
+
+        <!-- TAB 1: MATERI DAN DALIL -->
+        <section id="sec-materi" class="tab-content flex flex-col gap-6">
+            <div class="custom-card p-6 rounded-2xl border-l-4 border-l-emerald-500">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="bg-emerald-500/20 text-emerald-400 p-2 rounded-lg"><i class="fa-solid fa-book-quran text-xl"></i></span>
+                    <h2 class="text-xl font-bold text-white">Panduan Penyembelihan, Kurban & Aqiqah (Kelas IX SMP)</h2>
+                </div>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Pelajari ketentuan Islam mengenai tata cara penyembelihan hewan halal, ibadah Kurban saat Idul Adha, serta ibadah Aqiqah untuk kelahiran anak. Daging hasil kurban dan aqiqah ini nantinya diproses menjadi masakan khas daerah, salah satunya kuliner terkenal dari **Kota Sidoarjo**!
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1: Syariat Menyembelih -->
+                <div class="custom-card p-5 rounded-2xl flex flex-col justify-between hover:border-emerald-500/50 transition duration-300">
+                    <div>
+                        <div class="flex items-center space-x-2 text-emerald-400 mb-3">
+                            <i class="fa-solid fa-knife-kitchen text-lg"></i>
+                            <h3 class="font-bold text-lg">Tata Cara Menyembelih</h3>
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside">
+                            <li><strong class="text-emerald-300">Syarat Penyembelih:</strong> Beragama Islam/Ahlul Kitab, berakal, mumayyiz.</li>
+                            <li><strong class="text-emerald-300">Syarat Hewan:</strong> Hewan halal, masih hidup saat disembelih.</li>
+                            <li><strong class="text-emerald-300">Alat:</strong> Harus tajam, bukan dari gigi, kuku, atau tulang.</li>
+                            <li><strong class="text-emerald-300">Wajib Terpotong:</strong> Saluran napas (<em>Al-Halqum</em>) & saluran makan (<em>Al-Mari'</em>) serta dua urat leher (<em>Wadajain</em>).</li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-700/60 text-xs text-slate-400 italic">
+                        "Membaca Basmalah & Takbir serta menghadap Kiblat adalah Sunnah Muakkad."
+                    </div>
+                </div>
+
+                <!-- Card 2: Ketentuan Kurban -->
+                <div class="custom-card p-5 rounded-2xl flex flex-col justify-between hover:border-amber-500/50 transition duration-300">
+                    <div>
+                        <div class="flex items-center space-x-2 text-amber-400 mb-3">
+                            <i class="fa-solid fa-cow text-lg"></i>
+                            <h3 class="font-bold text-lg">Ibadah Kurban</h3>
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside">
+                            <li><strong class="text-amber-300">Waktu:</strong> 10 Dzulhijjah (setelah Shalat Id) & Hari Tasyrik (11, 12, 13 Dzulhijjah).</li>
+                            <li><strong class="text-amber-300">Hewan:</strong> Kambing/Domba (1 orang), Sapi/Kerbau (maks 7 orang), Unta (maks 7 orang).</li>
+                            <li><strong class="text-amber-300">Syarat Hewan:</strong> Cukup umur, sehat, tidak cacat/pincang.</li>
+                            <li><strong class="text-amber-300">Pembagian:</strong> Utama dibagikan dalam kondisi <span class="underline decoration-amber-400">MENTAH</span> kepada fakir miskin & tetangga.</li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-700/60 text-xs text-slate-400 italic font-arabic text-right">
+                        فَصَلِّ لِرَبِّكَ وَانْحَرْ (QS. Al-Kautsar: 2)
+                    </div>
+                </div>
+
+                <!-- Card 3: Ketentuan Aqiqah -->
+                <div class="custom-card p-5 rounded-2xl flex flex-col justify-between hover:border-teal-500/50 transition duration-300">
+                    <div>
+                        <div class="flex items-center space-x-2 text-teal-400 mb-3">
+                            <i class="fa-solid fa-baby text-lg"></i>
+                            <h3 class="font-bold text-lg">Ibadah Aqiqah</h3>
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside">
+                            <li><strong class="text-teal-300">Pengertian:</strong> Penyembelihan hewan atas kelahiran bayi sebagai bentuk rasa syukur.</li>
+                            <li><strong class="text-teal-300">Waktu Utama:</strong> Hari ke-7 setelah kelahiran bayi.</li>
+                            <li><strong class="text-teal-300">Ketentuan Jumlah:</strong> <br>• Bayi Laki-laki = <strong>2 ekor kambing</strong><br>• Bayi Perempuan = <strong>1 ekor kambing</strong></li>
+                            <li><strong class="text-teal-300">Pembagian:</strong> Disunnahkan dibagikan dalam kondisi <span class="underline decoration-teal-400">SUDAH MATANG (DIMASAK)</span>.</li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-700/60 text-xs text-slate-400 italic">
+                        "Setiap bayi tergadai dengan aqiqahnya..." (HR. Ahmad & Tirmidzi)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Culinary Spotlight Sidoarjo -->
+            <div class="bg-gradient-to-r from-amber-900/40 via-slate-800 to-emerald-900/40 p-5 rounded-2xl border border-amber-500/30 flex flex-col md:flex-row items-center gap-5">
+                <div class="text-4xl text-amber-400 p-3 bg-amber-500/10 rounded-xl">
+                    <i class="fa-solid fa-bowl-food"></i>
+                </div>
+                <div class="flex-grow text-center md:text-left">
+                    <h3 class="font-bold text-amber-300 text-base">Koneksi Kuliner Khas Sidoarjo:</h3>
+                    <p class="text-xs text-slate-300 mt-1">
+                        Di Sidoarjo, daging kurban dan aqiqah biasa diolah menjadi sajian khas istimewa seperti <strong>Lontong Kikil Sidoarjo</strong>, <strong>Rawon Daging Sapi Sidoarjo</strong>, serta <strong>Sate & Gule Kambing Sidoarjo</strong>! Selain itu, Sidoarjo juga terkenal dengan hidangan <em>Kupang Lontong</em> dan <em>Bandeng Asap</em>.
+                    </p>
+                </div>
+                <button onclick="switchTab('level1')" class="btn-hover px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 font-bold text-white text-sm shadow-lg">
+                    Mulai Simulation Game <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- TAB 2: LEVEL 1 - SIMULASI PENYEMBELIHAN -->
+        <section id="sec-level1" class="tab-content hidden flex flex-col gap-6">
+            <div class="custom-card p-5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950 px-2.5 py-1 rounded-md border border-emerald-800">Tingkat 1</span>
+                    <h2 class="text-lg font-bold text-white mt-1">Simulasi Rukun & Sunnah Penyembelihan Syar'i</h2>
+                    <p class="text-xs text-slate-300">Urutkan dan eksekusi langkah penyembelihan sesuai syariat Islam dengan benar.</p>
+                </div>
+                <div class="bg-slate-800 px-4 py-2 rounded-xl border border-slate-700 text-xs text-amber-300 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>Prosedur yang benar memberikan poin Berkah maksimal!</span>
+                </div>
+            </div>
+
+            <!-- Simulation Interactive Canvas & Steps -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Interactive Interactive Area -->
+                <div class="lg:col-span-7 custom-card p-4 rounded-2xl flex flex-col items-center justify-center relative min-h-[360px] overflow-hidden">
+                    <canvas id="slaughter-canvas" width="500" height="320" class="max-w-full h-auto rounded-xl bg-slate-900 border border-slate-700"></canvas>
+                    
+                    <div id="slaughter-status" class="mt-3 text-center text-sm font-semibold text-emerald-300">
+                        Status: Siap Memulai Persiapan Penyembelihan Sapi/Kambing.
+                    </div>
+                </div>
+
+                <!-- Action Controls Step by Step -->
+                <div class="lg:col-span-5 custom-card p-5 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-emerald-400 text-base mb-3 border-b border-slate-700 pb-2">
+                            Langkah Syar'i (Klik Sesuai Urutan):
+                        </h3>
+
+                        <div id="slaughter-steps" class="flex flex-col gap-2.5">
+                            <button onclick="slaughterAction(1)" id="step-btn-1" class="slaughter-step-btn w-full p-3 rounded-xl bg-slate-800 border border-slate-700 text-left hover:border-emerald-500 text-xs flex items-center justify-between transition">
+                                <span><strong class="text-emerald-400 mr-2">1.</strong> Asah pisau hingga sangat tajam (jauh dari hewan)</span>
+                                <i class="fa-solid fa-circle-check text-slate-600 step-icon"></i>
+                            </button>
+                            
+                            <button onclick="slaughterAction(2)" id="step-btn-2" class="slaughter-step-btn w-full p-3 rounded-xl bg-slate-800 border border-slate-700 text-left hover:border-emerald-500 text-xs flex items-center justify-between transition">
+                                <span><strong class="text-emerald-400 mr-2">2.</strong> Rebah hewan perlahan menghadap Kiblat (lambung kiri di bawah)</span>
+                                <i class="fa-solid fa-circle-check text-slate-600 step-icon"></i>
+                            </button>
+                            
+                            <button onclick="slaughterAction(3)" id="step-btn-3" class="slaughter-step-btn w-full p-3 rounded-xl bg-slate-800 border border-slate-700 text-left hover:border-emerald-500 text-xs flex items-center justify-between transition">
+                                <span><strong class="text-emerald-400 mr-2">3.</strong> Baca Basmalah & Takbir (<em>Bismillahi Allahu Akbar</em>)</span>
+                                <i class="fa-solid fa-circle-check text-slate-600 step-icon"></i>
+                            </button>
+
+                            <button onclick="slaughterAction(4)" id="step-btn-4" class="slaughter-step-btn w-full p-3 rounded-xl bg-slate-800 border border-slate-700 text-left hover:border-emerald-500 text-xs flex items-center justify-between transition">
+                                <span><strong class="text-emerald-400 mr-2">4.</strong> Potong urat Al-Halqum (napas) & Al-Mari' (makanan) dengan sekali gerak cepat</span>
+                                <i class="fa-solid fa-circle-check text-slate-600 step-icon"></i>
+                            </button>
+
+                            <button onclick="slaughterAction(5)" id="step-btn-5" class="slaughter-step-btn w-full p-3 rounded-xl bg-slate-800 border border-slate-700 text-left hover:border-emerald-500 text-xs flex items-center justify-between transition">
+                                <span><strong class="text-emerald-400 mr-2">5.</strong> Biarkan darah keluar sempurna & tunggu dingin sebelum dikuliti</span>
+                                <i class="fa-solid fa-circle-check text-slate-600 step-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-700 flex justify-between items-center">
+                        <button onclick="resetSlaughterGame()" class="px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 text-xs hover:bg-slate-600">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Simulasi
+                        </button>
+                        <span id="slaughter-progress" class="text-xs font-semibold text-emerald-400">Progres: 0 / 5</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: LEVEL 2 - KURBAN VS AQIQAH -->
+        <section id="sec-level2" class="tab-content hidden flex flex-col gap-6">
+            <div class="custom-card p-5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-amber-400 bg-amber-950 px-2.5 py-1 rounded-md border border-amber-800">Tingkat 2</span>
+                    <h2 class="text-lg font-bold text-white mt-1">Klasifikasi Ketentuan: Kurban vs Aqiqah</h2>
+                    <p class="text-xs text-slate-300">Pilihlah wadah yang tepat untuk setiap kasus/pernyataan ibadah berikut ini!</p>
+                </div>
+                <div class="text-xs text-slate-400">
+                    Pertanyaan: <span id="quiz-index" class="text-amber-400 font-bold">1</span> dari <span id="quiz-total font-bold">5</span>
+                </div>
+            </div>
+
+            <!-- Interactive Cards Quiz Area -->
+            <div id="quiz-container" class="custom-card p-6 rounded-2xl flex flex-col items-center justify-center min-h-[320px]">
+                <div id="quiz-question-card" class="w-full max-w-2xl bg-slate-800/90 border border-amber-500/30 p-6 rounded-2xl text-center space-y-4 shadow-xl">
+                    <span id="quiz-category-tag" class="px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-xs font-semibold">Studi Kasus Syariat</span>
+                    <h3 id="quiz-question-text" class="text-base sm:text-lg font-bold text-white leading-snug">
+                        Pak Ahmad dikaruniai seorang bayi laki-laki di Sidoarjo. Beliau menyembelih 2 ekor kambing pada hari ke-7 kelahiran. Ibadah apakah ini?
+                    </h3>
+                    
+                    <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                        <button onclick="answerQuiz('aqiqah')" class="quiz-option-btn p-4 rounded-xl bg-slate-700/80 hover:bg-emerald-600 border border-slate-600 hover:border-emerald-400 text-white font-bold text-sm transition text-center flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-baby text-teal-400 text-lg"></i>
+                            <span>Ibadah Aqiqah</span>
+                        </button>
+                        <button onclick="answerQuiz('kurban')" class="quiz-option-btn p-4 rounded-xl bg-slate-700/80 hover:bg-amber-600 border border-slate-600 hover:border-amber-400 text-white font-bold text-sm transition text-center flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-cow text-amber-400 text-lg"></i>
+                            <span>Ibadah Kurban</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quiz-feedback" class="mt-4 text-center hidden">
+                    <p id="quiz-feedback-text" class="text-sm font-semibold"></p>
+                    <button onclick="nextQuizQuestion()" class="mt-3 px-5 py-2 rounded-xl bg-emerald-500 text-white text-xs font-bold hover:bg-emerald-600 transition">
+                        Lanjut ke Kasus Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: LEVEL 3 - DAPUR BERKAH KULINER SIDOARJO -->
+        <section id="sec-level3" class="tab-content hidden flex flex-col gap-6">
+            <div class="custom-card p-5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-l-4 border-l-amber-500">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-teal-400 bg-teal-950 px-2.5 py-1 rounded-md border border-teal-800">Tingkat 3 (Bonus Sidoarjo)</span>
+                    <h2 class="text-lg font-bold text-white mt-1">Dapur Berkah Sidoarjo: Olah Daging Halal</h2>
+                    <p class="text-xs text-slate-300">Gunakan daging kurban & aqiqah syar'i untuk memasak hidangan kuliner khas Kota Delta Sidoarjo!</p>
+                </div>
+                <div class="bg-amber-500/20 text-amber-300 px-3 py-1.5 rounded-lg text-xs font-medium">
+                    <i class="fa-solid fa-fire mr-1"></i> Mode Masak Interactive
+                </div>
+            </div>
+
+            <!-- Cooking Station -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Recipe 1: Lontong Kikil Sidoarjo -->
+                <div class="custom-card p-5 rounded-2xl flex flex-col justify-between border hover:border-amber-500/60 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-base text-amber-300">Lontong Kikil Sidoarjo</h3>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Daging Sapi / Kikil</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">
+                            Sajian kikil sapi empuk berkuah kuning kaya rempah khas Sidoarjo, disajikan dengan lontong hangat & perasan jeruk nipis.
+                        </p>
+                        
+                        <!-- Ingredient checklists -->
+                        <div class="space-y-2 mb-4 text-xs text-slate-300">
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('kikil')" class="ing-kikil rounded text-emerald-500 focus:ring-0">
+                                <span>Kikil & Daging Sapi Kurban Halal</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('kikil')" class="ing-kikil rounded text-emerald-500 focus:ring-0">
+                                <span>Bumbu Kuning Rempah & Daun Jeruk</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('kikil')" class="ing-kikil rounded text-emerald-500 focus:ring-0">
+                                <span>Lontong Sidoarjo & Sambal Kemiri</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="cookDish('Lontong Kikil Sidoarjo')" id="btn-cook-kikil" disabled class="w-full py-2.5 rounded-xl bg-slate-700 text-slate-500 font-bold text-xs cursor-not-allowed transition">
+                        <i class="fa-solid fa-utensils mr-1"></i> Masak Lontong Kikil
+                    </button>
+                </div>
+
+                <!-- Recipe 2: Rawon Daging Sidoarjo -->
+                <div class="custom-card p-5 rounded-2xl flex flex-col justify-between border hover:border-amber-500/60 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-base text-amber-300">Rawon Daging Sidoarjo</h3>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Daging Sapi Kurban</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">
+                            Sup daging sapi khas Jawa Timur dengan kuah hitam alami kluwek yang pekat & harum, ditambah kecambah pendek & sambal.
+                        </p>
+
+                        <div class="space-y-2 mb-4 text-xs text-slate-300">
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('rawon')" class="ing-rawon rounded text-emerald-500 focus:ring-0">
+                                <span>Daging Sapi Kurban Segar</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('rawon')" class="ing-rawon rounded text-emerald-500 focus:ring-0">
+                                <span>Bumbu Kluwek Hitam Khas Sidoarjo</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('rawon')" class="ing-rawon rounded text-emerald-500 focus:ring-0">
+                                <span>Tauge Pendek & Emping Melinjo</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="cookDish('Rawon Daging Sidoarjo')" id="btn-cook-rawon" disabled class="w-full py-2.5 rounded-xl bg-slate-700 text-slate-500 font-bold text-xs cursor-not-allowed transition">
+                        <i class="fa-solid fa-utensils mr-1"></i> Masak Rawon Sidoarjo
+                    </button>
+                </div>
+
+                <!-- Recipe 3: Sate Kambing Aqiqah -->
+                <div class="custom-card p-5 rounded-2xl flex flex-col justify-between border hover:border-amber-500/60 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-base text-amber-300">Sate Kambing Sidoarjo</h3>
+                            <span class="text-xs bg-teal-950 text-teal-300 px-2 py-0.5 rounded border border-teal-800">Daging Kambing Aqiqah</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">
+                            Daging kambing hasil Aqiqah matang yang dibakar dengan bumbu kecap manis, irisan bawang merah & cabai rawit segar.
+                        </p>
+
+                        <div class="space-y-2 mb-4 text-xs text-slate-300">
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('sate')" class="ing-sate rounded text-emerald-500 focus:ring-0">
+                                <span>Daging Kambing Aqiqah Matang</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('sate')" class="ing-sate rounded text-emerald-500 focus:ring-0">
+                                <span>Bumbu Kecap & Olesan Mantap</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-slate-800 p-2 rounded-lg">
+                                <input type="checkbox" onchange="checkRecipe('sate')" class="ing-sate rounded text-emerald-500 focus:ring-0">
+                                <span>Bawang Merah & Tomat Iris</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="cookDish('Sate Kambing Sidoarjo')" id="btn-cook-sate" disabled class="w-full py-2.5 rounded-xl bg-slate-700 text-slate-500 font-bold text-xs cursor-not-allowed transition">
+                        <i class="fa-solid fa-utensils mr-1"></i> Bakar Sate Kambing
+                    </button>
+                </div>
+            </div>
+
+            <!-- Culinary Info Box Sidoarjo -->
+            <div class="custom-card p-5 rounded-2xl border-l-4 border-l-teal-500 flex flex-col sm:flex-row items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-2xl flex-shrink-0">
+                    <i class="fa-solid fa-fish font-bold"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-white">Tahukah Kamu? Ikon Kuliner Sidoarjo Lainnya</h4>
+                    <p class="text-xs text-slate-300 mt-1">
+                        Selain olahan daging sapi & kambing kurban, Sidoarjo dikenal sebagai <em>Kota Delta</em> penyedia <strong>Kupang Lontong</strong> (kerang laut kecil) dan <strong>Bandeng Asap Sidoarjo</strong>. Semua makanan laut ini juga merupakan rezeki halal yang Thayyib!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Dialog Popup (No Alert Window) -->
+    <div id="custom-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-emerald-500/50 p-6 rounded-2xl max-w-md w-full text-center shadow-2xl relative">
+            <div id="modal-icon" class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-3xl mb-4">
+                <i class="fa-solid fa-award"></i>
+            </div>
+            <h3 id="modal-title" class="text-xl font-bold text-white mb-2">Selamat!</h3>
+            <p id="modal-body" class="text-slate-300 text-sm mb-6 leading-relaxed">
+                Pesan modal akan muncul di sini.
+            </p>
+            <button onclick="closeModal()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition">
+                Tutup & Lanjutkan
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-800 bg-slate-950/80 py-4 px-4 text-center text-xs text-slate-500">
+        <p>© 2026 Media Pembelajaran PAI & BP Kelas 9 SMP | Konteks Edukasi Kuliner Daerah Sidoarjo, Jawa Timur.</p>
+    </footer>
+
+    <script>
+        // Global Game State
+        let score = 0;
+        let soundEnabled = true;
+
+        // Sound Effects Synthesizer using Web Audio API (No External Audio Asset dependency)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'success') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('sound-btn');
+            btn.innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark text-red-400"></i>';
+        }
+
+        function addScore(pts) {
+            score += pts;
+            document.getElementById('score-display').innerText = score;
+        }
+
+        // Custom Modal Function (replaces alert)
+        function showModal(title, body, iconClass = 'fa-solid fa-star', iconBg = 'bg-emerald-500/20', iconColor = 'text-emerald-400') {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerText = body;
+            const iconContainer = document.getElementById('modal-icon');
+            iconContainer.className = `w-16 h-16 rounded-full ${iconBg} ${iconColor} mx-auto flex items-center justify-center text-3xl mb-4`;
+            iconContainer.innerHTML = `<i class="${iconClass}"></i>`;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            playSound('click');
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        // Tab Switching Engine
+        function switchTab(tabId) {
+            playSound('click');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-emerald-600', 'text-white', 'shadow-md');
+                el.classList.add('text-slate-400');
+            });
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-md');
+            activeBtn.classList.remove('text-slate-400');
+
+            if (tabId === 'level1') {
+                drawSlaughterCanvas();
+            }
+        }
+
+        // Level 1: Slaughtering Simulation Logic
+        let currentStep = 0;
+        const slaughterCanvas = document.getElementById('slaughter-canvas');
+        const ctx = slaughterCanvas.getContext('2d');
+
+        function drawSlaughterCanvas() {
+            // Background
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, slaughterCanvas.width, slaughterCanvas.height);
+
+            // Ground Grass
+            ctx.fillStyle = '#064e3b';
+            ctx.fillRect(0, 240, slaughterCanvas.width, 80);
+
+            // Qibla Indicator Signboard
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(380, 20, 100, 45);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(380, 20, 100, 45);
+            ctx.fillStyle = '#34d399';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText('Arah Kiblat 🕋', 390, 45);
+
+            // Animal representation (Sapi/Kambing)
+            // Body
+            ctx.fillStyle = '#d97706';
+            ctx.beginPath();
+            if (currentStep >= 2) {
+                // Rebah (laying down facing Qibla)
+                ctx.ellipse(220, 240, 90, 45, 0, 0, Math.PI * 2);
+                ctx.fill();
+                // Head near Kiblat direction
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.ellipse(320, 245, 30, 20, Math.PI / 6, 0, Math.PI * 2);
+                ctx.fill();
+                // Eyes
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(330, 240, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(331, 240, 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                // Standing animal
+                ctx.ellipse(200, 180, 80, 50, 0, 0, Math.PI * 2);
+                ctx.fill();
+                // Head
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.ellipse(280, 140, 30, 25, 0, 0, Math.PI * 2);
+                ctx.fill();
+                // Legs
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(140, 210, 15, 60);
+                ctx.fillRect(170, 210, 15, 60);
+                ctx.fillRect(230, 210, 15, 60);
+                ctx.fillRect(250, 210, 15, 60);
+            }
+
+            // Knife drawing
+            if (currentStep >= 1) {
+                ctx.save();
+                ctx.translate(330, 190);
+                // Sharpened knife glow
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(0, 0, 40, 8);
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(-15, -2, 15, 12);
+                ctx.restore();
+            }
+
+            // Text status on canvas
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = '13px Inter';
+            if (currentStep === 0) {
+                ctx.fillText('Hewan dalam posisi siap. Asah pisau terlebih dahulu!', 20, 30);
+            } else if (currentStep === 1) {
+                ctx.fillText('Pisau sudah tajam! Sekarang rebahkan hewan perlahan.', 20, 30);
+            } else if (currentStep === 2) {
+                ctx.fillText('Hewan merebah santun ke Kiblat. Ucapkan Basmalah!', 20, 30);
+            } else if (currentStep === 3) {
+                ctx.fillText('Niat & Basmalah terucap. Sembelih urat al-halqum & mari\'!', 20, 30);
+            } else if (currentStep === 4) {
+                ctx.fillText('Penyembelihan sempurna! Biarkan darah keluar lancar.', 20, 30);
+                // Blood effect indicator
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(310, 260, 12, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (currentStep === 5) {
+                ctx.fillStyle = '#34d399';
+                ctx.font = 'bold 14px Inter';
+                ctx.fillText('✔ Syariat Penyembelihan Halal & Thayyib Selesai!', 20, 30);
+            }
+        }
+
+        function slaughterAction(step) {
+            if (step !== currentStep + 1) {
+                playSound('wrong');
+                showModal(
+                    "Urutan Kurang Tepat!",
+                    "Dalam syariat Islam, penyembelihan hewan memiliki urutan adab dan rukun yang harus dipatuhi. Ikuti urutan langkah dari nomor 1!",
+                    "fa-solid fa-triangle-exclamation",
+                    "bg-amber-500/20",
+                    "text-amber-400"
+                );
+                return;
+            }
+
+            currentStep = step;
+            playSound('success');
+
+            // Update UI Button states
+            const btn = document.getElementById(`step-btn-${step}`);
+            btn.classList.remove('bg-slate-800');
+            btn.classList.add('bg-emerald-900/60', 'border-emerald-500');
+            const icon = btn.querySelector('.step-icon');
+            icon.classList.remove('text-slate-600');
+            icon.classList.add('text-emerald-400');
+
+            document.getElementById('slaughter-progress').innerText = `Progres: ${currentStep} / 5`;
+            drawSlaughterCanvas();
+
+            if (currentStep === 5) {
+                addScore(100);
+                confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+                showModal(
+                    "Penyembelihan Sesuai Syariat Selesai!",
+                    "MasyaAllah! Kamu berhasil menjalankan tata cara penyembelihan hewan sesuai rukun dan sunnah Rasulullah SAW. Kamu mendapatkan +100 Skor Berkah!",
+                    "fa-solid fa-circle-check",
+                    "bg-emerald-500/20",
+                    "text-emerald-400"
+                );
+                document.getElementById('slaughter-status').innerText = "Status: Daging Halal Siap Diolah untuk Kurban/Aqiqah!";
+            }
+        }
+
+        function resetSlaughterGame() {
+            playSound('click');
+            currentStep = 0;
+            document.getElementById('slaughter-progress').innerText = `Progres: 0 / 5`;
+            document.querySelectorAll('.slaughter-step-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-900/60', 'border-emerald-500');
+                btn.classList.add('bg-slate-800');
+                const icon = btn.querySelector('.step-icon');
+                icon.classList.remove('text-emerald-400');
+                icon.classList.add('text-slate-600');
+            });
+            document.getElementById('slaughter-status').innerText = "Status: Siap Memulai Persiapan Penyembelihan Sapi/Kambing.";
+            drawSlaughterCanvas();
+        }
+
+        // Level 2: Kurban vs Aqiqah Interactive Quiz Questions
+        const quizQuestions = [
+            {
+                text: "Pak Ahmad dikaruniai seorang bayi laki-laki di Sidoarjo. Beliau menyembelih 2 ekor kambing pada hari ke-7 kelahiran. Ibadah apakah ini?",
+                ans: "aqiqah",
+                explanation: "Aqiqah ditujukan sebagai penebus rasa syukur atas kelahiran bayi. Untuk anak laki-laki disunnahkan 2 ekor kambing."
+            },
+            {
+                text: "Panitia Masjid Agung Sidoarjo menerima 1 ekor sapi dari 7 keluarga untuk disembelih pada tanggal 10 Dzulhijjah setelah Shalat Id. Ibadah apakah ini?",
+                ans: "kurban",
+                explanation: "Kurban dilaksanakan pada 10 Dzulhijjah & Hari Tasyrik (11, 12, 13 Dzulhijjah). 1 ekor sapi berlaku untuk maksimal 7 orang."
+            },
+            {
+                text: "Daging hasil sembelihan dibagikan kepada warga & fakir miskin di Sidoarjo dalam keadaan SUDAH MATANG / DIMASAK. Ibadah apakah ini?",
+                ans: "aqiqah",
+                explanation: "Disunnahkan membagikan daging Aqiqah dalam keadaan sudah siap santap (matang), sedangkan Kurban diutamakan mentah."
+            },
+            {
+                text: "Ibu Fatimah hendak menumbalkan domba berumur 1,5 tahun yang sehat dan tidak pincang pada tanggal 11 Dzulhijjah. Ibadah apakah ini?",
+                ans: "kurban",
+                explanation: "Penyembelihan pada Hari Tasyrik (11 Dzulhijjah) dengan syarat hewan tidak cacat adalah ibadah Kurban."
+            },
+            {
+                text: "Pak Budi memotong 1 ekor kambing atas kelahiran anak perempuannya pada hari ke-14. Ibadah apakah ini?",
+                ans: "aqiqah",
+                explanation: "Anak perempuan disunnahkan 1 ekor kambing aqiqah (bisa hari ke-7, 14, 21, dst)."
+            }
+        ];
+
+        let quizIndex = 0;
+
+        function renderQuizQuestion() {
+            const q = quizQuestions[quizIndex];
+            document.getElementById('quiz-index').innerText = quizIndex + 1;
+            document.getElementById('quiz-question-text').innerText = q.text;
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.querySelectorAll('.quiz-option-btn').forEach(b => b.disabled = false);
+        }
+
+        function answerQuiz(selected) {
+            const q = quizQuestions[quizIndex];
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const feedbackText = document.getElementById('quiz-feedback-text');
+            document.querySelectorAll('.quiz-option-btn').forEach(b => b.disabled = true);
+
+            if (selected === q.ans) {
+                playSound('success');
+                addScore(50);
+                feedbackText.className = "text-sm font-semibold text-emerald-400";
+                feedbackText.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> <strong>Benar! (+50 Poin)</strong> ${q.explanation}`;
+            } else {
+                playSound('wrong');
+                feedbackText.className = "text-sm font-semibold text-red-400";
+                feedbackText.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> <strong>Kurang Tepat.</strong> ${q.explanation}`;
+            }
+
+            feedbackEl.classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            playSound('click');
+            quizIndex++;
+            if (quizIndex < quizQuestions.length) {
+                renderQuizQuestion();
+            } else {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                showModal(
+                    "Kuis Kurban vs Aqiqah Selesai!",
+                    `Luar biasa! Kamu telah menyelesaikan seluruh studi kasus kurban dan aqiqah. Total Skor Berkah kamu sekarang: ${score}!`,
+                    "fa-solid fa-trophy",
+                    "bg-amber-500/20",
+                    "text-amber-400"
+                );
+                quizIndex = 0;
+                renderQuizQuestion();
+            }
+        }
+
+        // Level 3: Cooking Interactive Logic
+        function checkRecipe(type) {
+            playSound('click');
+            const checkboxes = document.querySelectorAll(`.ing-${type}`);
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            const cookBtn = document.getElementById(`btn-cook-${type}`);
+
+            if (allChecked) {
+                cookBtn.disabled = false;
+                cookBtn.className = "w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-600 text-white font-bold text-xs shadow-lg hover:brightness-110 cursor-pointer transition";
+            } else {
+                cookBtn.disabled = true;
+                cookBtn.className = "w-full py-2.5 rounded-xl bg-slate-700 text-slate-500 font-bold text-xs cursor-not-allowed transition";
+            }
+        }
+
+        function cookDish(dishName) {
+            playSound('success');
+            addScore(75);
+            confetti({ particleCount: 70, spread: 50, origin: { y: 0.6 } });
+            showModal(
+                `Sajian ${dishName} Berhasil Dimasak!`,
+                `Selamat! Kamu berhasil mengolah daging halal hasil kurban/aqiqah menjadi ${dishName} khas Sidoarjo yang lezat & berkah. Kamu mendapat +75 Skor Berkah!`,
+                "fa-solid fa-bowl-rice",
+                "bg-amber-500/20",
+                "text-amber-400"
+            );
+        }
+
+        // Initialize Canvas & App on load
+        window.onload = function() {
+            drawSlaughterCanvas();
+            renderQuizQuestion();
+        };
+    </script>
+</body>
+</html>
